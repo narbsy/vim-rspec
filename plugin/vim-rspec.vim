@@ -105,7 +105,7 @@ function! s:RunSpecMain(type)
 			call s:error_msg("Could not find the ".l:dir." directory.")
 			return
 		end
-		let l:spec = "spec -f h ".l:dir." -p **/*_spec.rb"
+		let l:spec = "spec -f h ".l:dir." -p \"**/*_spec.rb\""
 	end		
 
 	" run the spec command
