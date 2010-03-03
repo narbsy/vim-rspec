@@ -25,7 +25,8 @@ puts " "
 		msg		  = (failure/"div[@class='message']/pre").inner_html
     # as this is multiple lines, make sure all are available
 		back		= (failure/"div[@class='backtrace']/pre").inner_html.lines.map { |line| "  " + line }.join
-    ruby    = (failure/"pre[@class='ruby']/code").text.lines.map { |line| "  " + line.gsub(/(\d+)\s+/, '\1: ') }.join
+    # the last line doesn't have a \n at the end, it seems.
+    ruby    = (failure/"pre[@class='ruby']/code").text.lines.map { |line| "  " + line.gsub(/(\d+)\s*(.*?)/, '\1: \2') }.join "\n"
 		puts "  #{msg}"
 		puts back
     puts ruby
