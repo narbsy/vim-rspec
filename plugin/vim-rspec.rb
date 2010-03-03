@@ -21,14 +21,17 @@ puts " "
 		puts "#{classes[dd[:class]]} #{txt}"
 		next unless dd[:class] == "spec failed"
 		failure = (dd/"div[@class='failure']")
+    # this is typically one line
 		msg		  = (failure/"div[@class='message']/pre").inner_html
-		back		= (failure/"div[@class='backtrace']/pre").inner_html
-		#ruby		= (failure/"pre[@class='ruby']/code").inner_html.scan(/(<span>)(\d+)(<\/span>)([^<]+)/).map {|elem| "  "+elem[1]+": "+elem[3].chomp+"\n"}.join
-    remove_spans = lambda { |s| s.gsub(/<span .*?>(.*?)<\/span>/, '\1') }
-    ruby    = (failure/"pre[@class='ruby']/code").inner_html.lines.map { |line| remove_spans[remove_spans[line.gsub(/<span class="linenum">(\d+)<\/span>/, '\1:')]] }.join
+    # as this is multiple lines, make sure all are available
+		back		= (failure/"div[@class='backtrace']/pre").inner_html.lines.map { |line| "  " + line }.join
+    # do some cleanup for the line numbers
+    unspan = lambda { |s| s.gsub(/<span .*?>(.*?)<\/span>/, '\1') }
+    linenum = lambda { |s| s.gsub(/<span class="linenum">(\d+)<\/span>\s*/, '\1: ') }
+    ruby    = (failure/"pre[@class='ruby']/code").inner_html.lines.map { |line| "  " + unspan[unspan[linenum[line]]] }.join
 		puts "  #{msg}"
-		puts "  #{back}"
-		puts ruby
+		puts back
+    puts ruby
 	end
 	puts " "
 end
