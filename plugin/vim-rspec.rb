@@ -25,10 +25,7 @@ puts " "
 		msg		  = (failure/"div[@class='message']/pre").inner_html
     # as this is multiple lines, make sure all are available
 		back		= (failure/"div[@class='backtrace']/pre").inner_html.lines.map { |line| "  " + line }.join
-    # do some cleanup for the line numbers
-    unspan = lambda { |s| s.gsub(/<span .*?>(.*?)<\/span>/, '\1') }
-    linenum = lambda { |s| s.gsub(/<span class="linenum">(\d+)<\/span>\s*/, '\1: ') }
-    ruby    = (failure/"pre[@class='ruby']/code").inner_html.lines.map { |line| "  " + unspan[unspan[linenum[line]]] }.join
+    ruby    = (failure/"pre[@class='ruby']/code").text.lines.map { |line| "  " + line.gsub(/(\d+)\s+/, '\1: ') }.join
 		puts "  #{msg}"
 		puts back
     puts ruby
