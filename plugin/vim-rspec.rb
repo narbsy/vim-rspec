@@ -19,11 +19,13 @@ puts " "
 	(example/"dd").each do |dd|
 		txt = (dd/"span:first").inner_html
 		puts "#{classes[dd[:class]]} #{txt}"
-		next if dd[:class]!="spec failed"
-		failure  = (dd/"div[@class='failure']")
-		msg		= (failure/"div[@class='message']/pre").inner_html
+		next unless dd[:class] == "spec failed"
+		failure = (dd/"div[@class='failure']")
+		msg		  = (failure/"div[@class='message']/pre").inner_html
 		back		= (failure/"div[@class='backtrace']/pre").inner_html
-		ruby		= (failure/"pre[@class='ruby']/code").inner_html.scan(/(<span class="linenum">)(\d+)(<\/span>)([^<]+)/).map {|elem| "  "+elem[1]+": "+elem[3].chomp+"\n"}.join
+		#ruby		= (failure/"pre[@class='ruby']/code").inner_html.scan(/(<span>)(\d+)(<\/span>)([^<]+)/).map {|elem| "  "+elem[1]+": "+elem[3].chomp+"\n"}.join
+    remove_spans = lambda { |s| s.gsub(/<span .*?>(.*?)<\/span>/, '\1') }
+    ruby    = (failure/"pre[@class='ruby']/code").inner_html.lines.map { |line| remove_spans[remove_spans[line.gsub(/<span class="linenum">(\d+)<\/span>/, '\1:')]] }.join
 		puts "  #{msg}"
 		puts "  #{back}"
 		puts ruby
